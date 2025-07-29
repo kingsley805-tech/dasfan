@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import logo from "../assets/logo1.svg";
 import { motion, AnimatePresence } from "framer-motion";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { 
   Phone,
   Mail,
@@ -46,11 +47,29 @@ export default function Home() {
       document.body.style.overflow = 'unset';
     };
   }, [isMobileMenuOpen]);
+    const [showContent, setShowContent] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 8000); // 8 seconds
+
+    return () => clearTimeout(timer); // cleanup on unmount
+  }, []);
 
   const navLinks = ['Services', 'Experience', 'Network', 'Why Us', 'Testimonials', 'Contact'];
 
   return (
-    <div className="min-h-screen bg-gray-100 overflow-hidden">
+   
+    <>
+     {!showContent ?( <div className="flex items-center justify-center min-h-screen w-full px-4">
+  <DotLottieReact
+    src="https://lottie.host/2a944fe6-0e86-49cf-b887-71a048925d00/r8x6onGu09.lottie"
+    loop
+    autoplay
+    style={{ maxWidth: "100%", height: "auto" }}
+  />
+</div>
+):( <div className="min-h-screen bg-gray-100 overflow-hidden">
       {/* Navigation */}
       <motion.nav
         initial={{ y: -100 }}
@@ -412,6 +431,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+      
+    
+    </div>)}
+    </>
   );
 }
