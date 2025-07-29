@@ -46,7 +46,6 @@ function AnimatedNumber({ value, suffix, index }: AnimatedNumberProps) {
       const duration = 1500; // 1.5 seconds
       const delay = index * 150; // Stagger delay
       const startTime = Date.now() + delay;
-      const endTime = startTime + duration;
 
       const animate = () => {
         const now = Date.now();

@@ -56,7 +56,7 @@ const LogisticsWorldMap: React.FC = () => {
     portEfficiency: '94.2%'
   });
 
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Static data
