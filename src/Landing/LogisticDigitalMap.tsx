@@ -152,38 +152,26 @@ const LogisticsWorldMap: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const containerStyle: React.CSSProperties = {
-    background: `
-      radial-gradient(circle at ${mousePosition.x * 100}% ${mousePosition.y * 100}%, 
-      rgba(245, 166, 35, 0.1) 0%, 
-      transparent 50%), 
-      linear-gradient(135deg, #fff7ed 0%, #ffffff 50%, #ffedd5 100%)
-
-    `
-  };
-
   return (
+   <>
     <div 
       ref={containerRef}
-      className="w-screen bg-white h-screen relative overflow-hidden font-sans text-white "
-      style={containerStyle}
+      className="w-screen bg-white h-screen relative overflow-hidden font-sans text-white"
       onMouseMove={handleMouseMove}
     >
       {/* Header */}
-     <div className="absolute top-5 left-5 z-50 bg-white bg-opacity-70 p-4 rounded-xl backdrop-blur-md">
-        <h1 className="text-2xl mb-1  bg-clip-text text-orange-500 font-bold">
-          Dasfan <span className='text-black'>Global Logistics Network</span>
-        </h1>
-        <p className="text-sm opacity-80 text-black">Real-time shipping routes and port data</p>
-      </div>
+    <div className="absolute top-5 left-1/2 sm:left-5 transform -translate-x-1/2 sm:translate-x-0 z-50 bg-white bg-opacity-70 p-4 rounded-xl backdrop-blur-md text-center sm:text-left w-[90vw] sm:w-auto">
+  <h1 className="text-xl sm:text-2xl mb-1 bg-clip-text text-orange-500 font-bold">
+    Dasfan <span className='text-black'>Global Logistics Network</span>
+  </h1>
+  <p className="text-sm opacity-80 text-black">Real-time shipping routes and port data</p>
+</div>
+
 
       {/* Map Container */}
       <div className="relative w-full h-full overflow-hidden ">
         <div 
-          className="w-full h-full relative"
-          style={{
-            background: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500"><rect width="1000" height="500" fill="%23f5a623"/><g fill="%23ff6b35" stroke="%23ffffff" stroke-width="0.5"><path d="M150 200 L200 180 L250 190 L300 200 L350 180 L400 190 L450 200 Z"/><path d="M500 220 L550 200 L600 210 L650 220 L700 200 L750 210 L800 220 Z"/><path d="M100 300 L150 280 L200 290 L250 300 L300 280 L350 290 L400 300 Z"/><path d="M450 320 L500 300 L550 310 L600 320 L650 300 L700 310 L750 320 Z"/><path d="M200 100 L250 80 L300 90 L350 100 L400 80 L450 90 L500 100 Z"/><path d="M550 120 L600 100 L650 110 L700 120 L750 100 L800 110 L850 120 Z"/></g></svg>') center/cover`
-          }}
+          className="w-full h-full relative bg-gradient-to-r from-orange-50 to-orange-100"
         >
           {/* Logistics Layer */}
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -230,9 +218,10 @@ const LogisticsWorldMap: React.FC = () => {
       </div>
 
       {/* Data Panel */}
-      <div className="absolute top-5 right-5 w-80 bg-black bg-opacity-80 pb-6 rounded-2xl p-5 backdrop-blur-md border border-white border-opacity-10 max-h-[80vh] overflow-y-auto">
+      <div className="absolute hidden md:block top-5 right-5 w-80 bg-black bg-opacity-80 pb-6 rounded-2xl p-5 small backdrop-blur-md border border-white border-opacity-10 max-h-[80vh] overflow-y-auto">
         {/* Global Trade Volume */}
-        <div className="bg-white bg-opacity-10 mb-4 p-4 rounded-xl border-l-4 border-orange-400">
+       <div className="flex items-center justify-center ">
+         <div className="bg-white bg-opacity-10 mb-4 p-4 rounded-xl border-l-4 border-orange-400">
           <h3 className="text-lg mb-2 text-orange-400 font-semibold">Global Trade Volume</h3>
           <div className="flex justify-between mb-1">
             <span className='text-black'>Daily TEU:</span>
@@ -247,6 +236,7 @@ const LogisticsWorldMap: React.FC = () => {
             <span className="font-bold text-orange-300">{metrics.portEfficiency}</span>
           </div>
         </div>
+       </div>
 
         {/* Top Shipping Routes */}
         <div className="bg-white bg-opacity-10 mb-4 p-4 rounded-xl border-l-4 border-orange-400">
@@ -276,6 +266,9 @@ const LogisticsWorldMap: React.FC = () => {
         </div>
       </div>
 
+
+
+
       {/* Legend */}
       <div className="absolute bottom-5 left-5 bg-black bg-opacity-80 p-4 rounded-xl backdrop-blur-md">
         <div className="flex items-center mb-2">
@@ -290,6 +283,7 @@ const LogisticsWorldMap: React.FC = () => {
           <div className="w-5 h-1 mr-3 rounded bg-orange-600"></div>
           <span className="text-sm">High Traffic</span>
         </div>
+        
       </div>
 
       {/* Tooltip */}
@@ -317,12 +311,59 @@ const LogisticsWorldMap: React.FC = () => {
           100% { background-position: 100px 0; }
         }
       `}</style>
+
+      
     </div>
+    {/* Data Panel - Mobile/Tablet Only */}
+<div className="block md:hidden mx-auto mt-6 mb-6 w-[90%] bg-black bg-opacity-80 pb-6 rounded-2xl p-5 backdrop-blur-md border border-white border-opacity-10 max-h-[80vh] overflow-y-auto">
+  {/* Global Trade Volume */}
+  <div className="flex items-center justify-center">
+    <div className="bg-white bg-opacity-10 mb-4 p-4 rounded-xl border-l-4 border-orange-400 w-full">
+      <h3 className="text-lg mb-2 text-orange-400 font-semibold">Global Trade Volume</h3>
+      <div className="flex justify-between mb-1">
+        <span className='text-black'>Daily TEU:</span>
+        <span className="font-bold text-orange-300">{metrics.dailyTEU}</span>
+      </div>
+      <div className="flex justify-between mb-1">
+        <span className='text-black'>Active Routes:</span>
+        <span className="font-bold text-orange-300">{metrics.activeRoutes}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className='text-black'>Port Efficiency:</span>
+        <span className="font-bold text-orange-300">{metrics.portEfficiency}</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Top Shipping Routes */}
+  <div className="bg-white bg-opacity-10 mb-4 p-4 rounded-xl border-l-4 border-orange-400">
+    <h3 className="text-lg mb-2 text-orange-400 font-semibold">Top Shipping Routes</h3>
+    <p className="text-sm leading-relaxed text-black"><strong className='text-orange-600'>1.</strong> Asia-Europe: 24.3M TEU/year</p>
+    <p className="text-sm leading-relaxed text-black"><strong className='text-orange-600'>2.</strong> Trans-Pacific: 18.7M TEU/year</p>
+    <p className="text-sm leading-relaxed text-black"><strong className='text-orange-600'>3.</strong> Asia-Americas: 12.4M TEU/year</p>
+  </div>
+
+  {/* Busiest Ports */}
+  <div className="bg-white bg-opacity-10 mb-4 p-4 rounded-xl border-l-4 border-orange-400">
+    <h3 className="text-lg mb-2 text-orange-400 font-semibold">Busiest Ports</h3>
+    <p className="text-sm leading-relaxed text-black"><strong className='text-orange-600'>Shanghai:</strong> 47.3M TEU</p>
+    <p className="text-sm leading-relaxed text-black"><strong className='text-orange-600'>Singapore:</strong> 37.2M TEU</p>
+    <p className="text-sm leading-relaxed text-black"><strong className='text-orange-600'>Rotterdam:</strong> 15.3M TEU</p>
+    <p className="text-sm leading-relaxed text-black"><strong className='text-orange-600'>Los Angeles:</strong> 10.7M TEU</p>
+  </div>
+
+  {/* Current Alerts */}
+  <div className="bg-white bg-opacity-10 p-4 rounded-xl border-l-4 border-orange-400">
+    <h3 className="text-lg mb-2 text-orange-400 font-semibold">Current Alerts</h3>
+    {alerts.map((alert) => (
+      <p key={alert.id} className="text-sm leading-relaxed" style={{ color: alert.color }}>
+        {alert.icon} {alert.location}: {alert.message}
+      </p>
+    ))}
+  </div>
+</div></>
+
   );
 };
 
 export default LogisticsWorldMap;
-
-
-
- 

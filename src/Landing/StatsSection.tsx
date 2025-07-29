@@ -1,6 +1,4 @@
-
 import React, { useRef, useEffect } from "react";
-import { motion, useMotionValue, useTransform, animate, useInView } from "framer-motion";
 import { Users, Package, Globe, Clock } from "lucide-react";
 
 // Helper function to parse the number and its suffix from the stat string
@@ -15,54 +13,96 @@ const parseStatNumber = (str: string) => {
 };
 
 // Component to animate a number
-function AnimatedNumber({ value, suffix, index }) {
-  const nodeRef = useRef(null);
-  // useInView to trigger the animation when the component enters the viewport
-  const isInView = useInView(nodeRef, { once: true });
+interface AnimatedNumberProps {
+  value: number;
+  suffix: string;
+  index: number;
+}
 
-  // useMotionValue to create an animatable value that starts from 0
-  const count = useMotionValue(0);
+function AnimatedNumber({ value, suffix, index }: AnimatedNumberProps) {
+  const [displayValue, setDisplayValue] = React.useState(0);
+  const [isVisible, setIsVisible] = React.useState(false);
+  const nodeRef = useRef<HTMLDivElement>(null);
 
-  // useTransform to format the number as it animates, adding localization and decimal handling
-  const display = useTransform(count, (latest) => {
-    // If the original value had decimals, ensure one decimal place is always shown
-    if (value % 1 !== 0) {
-      return (Math.round(latest * 10) / 10).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-    }
-    // Otherwise, round to the nearest integer and format
-    return Math.round(latest).toLocaleString('en-US');
-  });
-
-  // useEffect to trigger the number animation when it comes into view
   useEffect(() => {
-    if (isInView) {
-      // Animate the 'count' MotionValue from 0 to the target 'value'
-      const controls = animate(count, value, {
-        duration: 1.5, // Duration of the counting animation
-        delay: index * 0.15, // Stagger delay for each stat card
-        ease: "easeOut"
-      });
-      return controls.stop; // Clean up animation on unmount
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (nodeRef.current) {
+      observer.observe(nodeRef.current);
     }
-  }, [isInView, value, index, count]);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (isVisible) {
+      const duration = 1500; // 1.5 seconds
+      const delay = index * 150; // Stagger delay
+      const startTime = Date.now() + delay;
+      const endTime = startTime + duration;
+
+      const animate = () => {
+        const now = Date.now();
+        if (now < startTime) {
+          requestAnimationFrame(animate);
+          return;
+        }
+
+        const progress = Math.min((now - startTime) / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const currentValue = value * easeOut;
+        
+        setDisplayValue(currentValue);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      animate();
+    }
+  }, [isVisible, value, index]);
+
+  const formatNumber = (num: number) => {
+    if (value % 1 !== 0) {
+      return (Math.round(num * 10) / 10).toLocaleString('en-US', { 
+        minimumFractionDigits: 1, 
+        maximumFractionDigits: 1 
+      });
+    }
+    return Math.round(num).toLocaleString('en-US');
+  };
 
   return (
-    <motion.div
+    <div
       ref={nodeRef}
       className="text-4xl lg:text-5xl font-bold text-orange-500 mb-2"
-      // Opacity animation for the entire number block, aligning with the count animation
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: index * 0.1 }}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transition: `opacity 0.8s ease ${index * 0.1}s`
+      }}
     >
-      <motion.span>{display}</motion.span>{suffix}
-    </motion.div>
+      <span>{formatNumber(displayValue)}</span>{suffix}
+    </div>
   );
 }
 
+interface Stat {
+  icon: React.ComponentType<{ className?: string }>;
+  number: string;
+  label: string;
+  description: string;
+}
+
 export default function StatsSection() {
-  const stats = [
+  const stats: Stat[] = [
     {
       icon: Users,
       number: "500+",
@@ -92,12 +132,13 @@ export default function StatsSection() {
   return (
     <section className="py-20 bg-gradient-to-r from-orange-50 to-orange-100">
       <div className="max-w-7xl mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+        <div
           className="text-center mb-16"
+          style={{
+            opacity: 0,
+            transform: 'translateY(30px)',
+            animation: 'fadeInUp 0.8s ease forwards'
+          }}
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
             Trusted by
@@ -106,17 +147,18 @@ export default function StatsSection() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Our numbers speak for themselves. See why businesses worldwide choose Dasfan for their logistics needs.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
               className="text-center group"
+              style={{
+                opacity: 0,
+                transform: 'scale(0.8)',
+                animation: `fadeInScale 0.6s ease ${index * 0.1}s forwards`
+              }}
             >
               <div 
                 className="rounded-3xl p-8 bg-white transition-all duration-500 hover:scale-105"
@@ -124,10 +166,12 @@ export default function StatsSection() {
                   boxShadow: '12px 12px 24px rgba(255, 107, 53, 0.1), -12px -12px 24px rgba(255, 255, 255, 0.9)'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.boxShadow = '8px 8px 16px rgba(255, 107, 53, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.95)';
+                  const target = e.target as HTMLElement;
+                  target.style.boxShadow = '8px 8px 16px rgba(255, 107, 53, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.95)';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.boxShadow = '12px 12px 24px rgba(255, 107, 53, 0.1), -12px -12px 24px rgba(255, 255, 255, 0.9)';
+                  const target = e.target as HTMLElement;
+                  target.style.boxShadow = '12px 12px 24px rgba(255, 107, 53, 0.1), -12px -12px 24px rgba(255, 255, 255, 0.9)';
                 }}
               >
                 {/* Icon */}
@@ -158,10 +202,26 @@ export default function StatsSection() {
                   {stat.description}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeInScale {
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
     </section>
   );
 }

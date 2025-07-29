@@ -5,6 +5,7 @@ import { ArrowRight, Search, Ship, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+
 export default function HeroSection() {
 
   const titleAnimation = {
@@ -157,6 +158,12 @@ export default function HeroSection() {
                   background: 'linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)',
                   boxShadow: '6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.8)',
                   border: 'none'
+                }}
+                 onClick={() => {
+                  const contactSection = document.getElementById('contact');
+                  if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: 'smooth' });
+                  }
                 }}
                 onMouseDown={(e) => { e.currentTarget.style.boxShadow = 'inset 3px 3px 6px rgba(0, 0, 0, 0.2), inset -3px -3px 6px rgba(255, 255, 255, 0.7)'; }}
                 onMouseUp={(e) => { e.currentTarget.style.boxShadow = '6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.8)'; }}
